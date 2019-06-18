@@ -1,0 +1,11 @@
+To pip install, first locally install the library:
+
+cd ../c
+make
+make install
+
+Then pip install the package:
+
+../python
+CFLAGS="-I../c/local/include" LDFLAGS="-L../c/local/lib" pip install --global-option=build_ext 
+.

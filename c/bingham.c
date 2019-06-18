@@ -1752,7 +1752,6 @@ void bingham_mult(bingham_t *B, bingham_t *B1, bingham_t *B2)
     matrix_add(C2, C2, C, d, d);
   }
 
-
   //for (i = 0; i < d-1; i++)
   //  Z[i][i] = B1->Z[i];
   //transpose(Vt, B1->V, d-1, d);
@@ -1765,16 +1764,22 @@ void bingham_mult(bingham_t *B, bingham_t *B1, bingham_t *B2)
   //matrix_mult(ZV, Z, B2->V, d-1, d-1, d);
   //matrix_mult(C2, Vt, ZV, d, d-1, d);
 
-
   // compute the principal components of C = C1 + C2
   matrix_add(C, C1, C2, d, d);
   double z[d];
   double **V = C1;  // save an alloc
   eigen_symm(z, V, C, d);
   //matrix_copy(B->V, V, d-1, d);
+  free_matrix2(B->V);
+  B->V = new_matrix2(d-1, d);
+  memset(B->V[0], 0, d*(d-1)*sizeof(double));
   for (i = 0; i < d-1; i++)
+  {
     for (j = 0; j < d; j++)
+    {
       B->V[i][j] = V[d-1-i][j];  //V[j][d-1-i];
+    }
+  }
 
   //printf("z = [ %f %f %f %f ]\n\n", z[0], z[1], z[2], z[3]);
   //printf("V[0] = [%f %f %f %f]\n", V[0][0], V[0][1], V[0][2], V[0][3]);
@@ -1801,6 +1806,7 @@ void bingham_mult(bingham_t *B, bingham_t *B1, bingham_t *B2)
   //free_matrix2(Vt);
   //free_matrix2(Z);
   //free_matrix2(ZV);
+  
   free_matrix2(C1);
   free_matrix2(C2);
   free_matrix2(C);

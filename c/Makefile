@@ -4,7 +4,7 @@ LDIR=lib
 MATLABDIR=../matlab
 
 
-INSTALL_DIR=/usr
+INSTALL_DIR=./local
 #$(info $$INSTALL_DIR is [$(INSTALL_DIR)])
 
 CC=gcc
