@@ -7,5 +7,8 @@ make install
 Then pip install the package:
 
 ../python
-CFLAGS="-I../c/local/include" LDFLAGS="-L../c/local/lib" pip install --global-option=build_ext 
-.
+CFLAGS="-I../c/local/include" LDFLAGS="-L../c/local/lib" pip install --global-option=build_ext .
+
+or 
+
+CFLAGS="-I../c/local/include" LDFLAGS="-L../c/local/lib" python setup.py build_ext --inplace
