@@ -1,6 +1,7 @@
 from distutils.core import setup
 from distutils.extension import Extension
 from Cython.Build import cythonize
+import numpy
 
 bingham_extension = Extension(
     name="pybingham",
@@ -10,6 +11,7 @@ bingham_extension = Extension(
 
 setup(
     name="pybingham",
-    ext_modules=cythonize([bingham_extension])
+    ext_modules=cythonize([bingham_extension]),
+    include_dirs=[numpy.get_include()]
 )
 
