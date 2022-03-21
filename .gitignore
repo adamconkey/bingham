@@ -7,3 +7,9 @@ c/fit_bingham
 c/libbingham.a
 c/tessellate_S3
 c/test_util
+c/local/*
+
+python/*.c
+python/*.so
+python/build/*
+
