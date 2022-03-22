@@ -108,8 +108,13 @@ X = np.array([[0.8776, 0, 0, -0.4794],
 v1 = np.array([0,1,0,0], dtype=np.double)
 v2 = np.array([0,0,1,0], dtype=np.double)
 v3 = np.array([0,0,0,1], dtype=np.double)
-b = pybingham.Bingham(v1, v2, v3, -1, -2, -3)
-print("PDF BEFORE", b.pdf(np.array([1,0,0,0], dtype=np.double)))
-b.fit(X)
-print("PDF AFTER", b.pdf(np.array([1,0,0,0], dtype=np.double)))
+b1 = pybingham.Bingham(v1, v2, v3, -1, -2, -3)
+b2 = pybingham.Bingham()
+b2.fit(X)
+
+print("B1 PDF", b1.pdf(np.array([1,0,0,0], dtype=np.double)))
+print("B2 PDF", b2.pdf(np.array([1,0,0,0], dtype=np.double)))
+print("CE", pybingham.bingham_cross_entropy(b1, b2))
+print("KL", pybingham.bingham_kl_divergence(b1, b2))
+
 print("DONE")

@@ -50,9 +50,8 @@ cdef class Bingham:
             bingham_c.bingham_fit(&self._c_bingham_t, &c_X[0], n, d)
         finally:
             PyMem_Free(c_X)
-        print("SUCCESFUL FIT")
-
-    
+        
+        
 def bingham_F(np.ndarray[double, ndim=1, mode="c"] Z not None):
     cdef double F = bingham_c.bingham_F_lookup_3d(<double*> Z.data)
     return F
@@ -65,22 +64,15 @@ def bingham_dF(Z):
     return np.asarray([dF1, dF2, dF3])
 
 
-def bingham_mult(Bingham B, Bingham B1, Bingham B2):
-
-    # TODO (adam): Not sure if this one runs yet, taken from r-pad
-    
-    #cdef bingham_c.bingham_t *b = &B._c_bingham_t
-    #cdef bingham_c.bingham_t *b1 = &B1._c_bingham_t
-    #cdef bingham_c.bingham_t *b2 = &B2._c_bingham_t
-    #bingham_c.bingham_mult(b, b1, b2)
-    bingham_c.bingham_mult(<bingham_c.bingham_t *> &B._c_bingham_t, 
-                           <bingham_c.bingham_t *> &B1._c_bingham_t,
-                           <bingham_c.bingham_t *> &B2._c_bingham_t)
-    #b = NULL
-    #b1 = NULL
-    #b2 = NULL
-    #return None
-
-#def bingham_multi_array(B_out, B_array):
+def bingham_cross_entropy(Bingham B1, Bingham B2):
+    cdef bingham_c.bingham_t *c_B1 = &B1._c_bingham_t
+    cdef bingham_c.bingham_t *c_B2 = &B2._c_bingham_t
+    cdef double ce = bingham_c.bingham_cross_entropy(c_B1, c_B2)
+    return ce
 
 
+def bingham_kl_divergence(Bingham B1, Bingham B2):
+    cdef bingham_c.bingham_t *c_B1 = &B1._c_bingham_t
+    cdef bingham_c.bingham_t *c_B2 = &B2._c_bingham_t
+    cdef double kl = bingham_c.bingham_KL_divergence(c_B1, c_B2)
+    return kl
