@@ -105,7 +105,11 @@ X = np.array([[0.8776, 0, 0, -0.4794],
               [0.5445, 0, 0, -0.8388],
               [0.5403, 0, 0, -0.8415]], dtype=np.float64)
 
-b = pybingham.Bingham()
+v1 = np.array([0,1,0,0], dtype=np.double)
+v2 = np.array([0,0,1,0], dtype=np.double)
+v3 = np.array([0,0,0,1], dtype=np.double)
+b = pybingham.Bingham(v1, v2, v3, -1, -2, -3)
+print("PDF BEFORE", b.pdf(np.array([1,0,0,0], dtype=np.double)))
 b.fit(X)
-
+print("PDF AFTER", b.pdf(np.array([1,0,0,0], dtype=np.double)))
 print("DONE")
