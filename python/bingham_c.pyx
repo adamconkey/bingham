@@ -33,8 +33,7 @@ cdef class Bingham:
     @cython.boundscheck(False)
     @cython.wraparound(False)
     def pdf(self, np.ndarray[double, ndim=1, mode="c"] x not None):
-        cdef double f = bingham_c.bingham_pdf(<double*> x.data, &self._c_bingham_t)
-        return f
+        return bingham_c.bingham_pdf(<double*> x.data, &self._c_bingham_t)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)    
@@ -57,13 +56,23 @@ cdef class Bingham:
 
     @property
     def entropy(self):
-        cdef double entropy = self._c_bingham_t.stats.entropy
-        return entropy
-        
-        
+        return self._c_bingham_t.stats.entropy
+
+
+def bingham_cross_entropy(Bingham B1, Bingham B2):
+    cdef bingham_c.bingham_t *c_B1 = &B1._c_bingham_t
+    cdef bingham_c.bingham_t *c_B2 = &B2._c_bingham_t
+    return bingham_c.bingham_cross_entropy(c_B1, c_B2)
+
+
+def bingham_kl_divergence(Bingham B1, Bingham B2):
+    cdef bingham_c.bingham_t *c_B1 = &B1._c_bingham_t
+    cdef bingham_c.bingham_t *c_B2 = &B2._c_bingham_t
+    return bingham_c.bingham_KL_divergence(c_B1, c_B2)
+
+
 def bingham_F(np.ndarray[double, ndim=1, mode="c"] Z not None):
-    cdef double F = bingham_c.bingham_F_lookup_3d(<double*> Z.data)
-    return F
+    return bingham_c.bingham_F_lookup_3d(<double*> Z.data)
 
 
 def bingham_dF(Z):
@@ -71,17 +80,3 @@ def bingham_dF(Z):
     cdef double dF2 = bingham_c.bingham_dF2_3d(<double> Z[0], <double> Z[1], <double> Z[2])
     cdef double dF3 = bingham_c.bingham_dF3_3d(<double> Z[0], <double> Z[1], <double> Z[2])
     return np.asarray([dF1, dF2, dF3])
-
-
-def bingham_cross_entropy(Bingham B1, Bingham B2):
-    cdef bingham_c.bingham_t *c_B1 = &B1._c_bingham_t
-    cdef bingham_c.bingham_t *c_B2 = &B2._c_bingham_t
-    cdef double ce = bingham_c.bingham_cross_entropy(c_B1, c_B2)
-    return ce
-
-
-def bingham_kl_divergence(Bingham B1, Bingham B2):
-    cdef bingham_c.bingham_t *c_B1 = &B1._c_bingham_t
-    cdef bingham_c.bingham_t *c_B2 = &B2._c_bingham_t
-    cdef double kl = bingham_c.bingham_KL_divergence(c_B1, c_B2)
-    return kl
