@@ -116,5 +116,6 @@ print("B1 PDF", b1.pdf(np.array([1,0,0,0], dtype=np.double)))
 print("B2 PDF", b2.pdf(np.array([1,0,0,0], dtype=np.double)))
 print("CE", pybingham.bingham_cross_entropy(b1, b2))
 print("KL", pybingham.bingham_kl_divergence(b1, b2))
+print("ENTROPY", pybingham.bingham_entropy(b1))
 
 print("DONE")
