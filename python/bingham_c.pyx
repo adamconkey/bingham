@@ -1,6 +1,7 @@
 import cython
 import numpy as np
 
+import ctypes
 cimport numpy as np
 cimport bingham_c
 from cpython.mem cimport PyMem_Malloc, PyMem_Free
@@ -40,9 +41,7 @@ cdef class Bingham:
     def fit(self, np.ndarray[np.float64_t, ndim=2, mode="c"] X):
         cdef int n = X.shape[0]
         cdef int d = X.shape[1]
-        cdef double** c_X = <double**>PyMem_Malloc(n * sizeof(double*))
-        if not c_X:
-            raise MemoryError("Problem allocating memory for data to be fit")
+        cdef double** c_X = bingham_c.new_matrix2(n, 4)
         try:
             for i in range(n):
                 c_X[i] = &X[i,0]
@@ -50,6 +49,18 @@ cdef class Bingham:
         finally:
             PyMem_Free(c_X)
         self.compute_stats()
+
+    def sample(self, n_samples):
+        cdef np.ndarray[double, ndim=2, mode="c"] samples = np.ascontiguousarray(np.empty((n_samples, 4)), dtype=ctypes.c_double)
+        cdef double** c_samples = bingham_c.new_matrix2(n_samples, 4)
+        cdef int i
+        try:
+            for i in range(n_samples):
+                c_samples[i] = &samples[i,0]
+            bingham_c.bingham_sample(&c_samples[0], &self._c_bingham_t, n_samples)
+        finally:
+            PyMem_Free(c_samples)
+        return samples
 
     def compute_stats(self):
         bingham_c.bingham_stats(&self._c_bingham_t)

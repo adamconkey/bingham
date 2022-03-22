@@ -79,3 +79,7 @@ cdef extern from "bingham/bingham_constants.h":
     double bingham_dF1_3d(double z1, double z2, double z3)
     double bingham_dF2_3d(double z1, double z2, double z3)
     double bingham_dF3_3d(double z1, double z2, double z3)
+
+
+cdef extern from "bingham/util.h":
+    double **new_matrix2(int n, int m)
