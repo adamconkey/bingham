@@ -71,6 +71,13 @@ cdef class Bingham:
     def entropy(self):
         return self._c_bingham_t.stats.entropy
 
+    @property
+    def mode(self):
+        cdef np.ndarray[double, ndim=1, mode="c"] mode = np.empty(4)
+        for i in range(4):
+            mode[i] = self._c_bingham_t.stats.mode[i]
+        return mode
+
 
 def bingham_cross_entropy(Bingham B1, Bingham B2):
     cdef bingham_c.bingham_t *c_B1 = &B1._c_bingham_t
