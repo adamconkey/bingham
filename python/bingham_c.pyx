@@ -50,10 +50,12 @@ cdef class Bingham:
             PyMem_Free(c_X)
         self.compute_stats()
 
-    def sample(self, n_samples):
-        cdef np.ndarray[double, ndim=2, mode="c"] samples = np.ascontiguousarray(np.empty((n_samples, 4)), dtype=ctypes.c_double)
+    @cython.boundscheck(False)
+    @cython.wraparound(False)        
+    def sample(self, int n_samples):
+        cdef np.ndarray[double, ndim=2, mode="c"] samples
+        samples = np.ascontiguousarray(np.empty((n_samples, 4)), dtype=ctypes.c_double)
         cdef double** c_samples = bingham_c.new_matrix2(n_samples, 4)
-        cdef int i
         try:
             for i in range(n_samples):
                 c_samples[i] = &samples[i,0]
