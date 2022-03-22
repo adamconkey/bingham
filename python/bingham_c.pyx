@@ -43,7 +43,7 @@ cdef class Bingham:
         cdef int d = X.shape[1]
         cdef double** c_X = <double**>PyMem_Malloc(n * sizeof(double*))
         if not c_X:
-            raise MemoryError()
+            raise MemoryError("Problem allocating memory for data to be fit")
         try:
             for i in range(n):
                 c_X[i] = &X[i,0]
