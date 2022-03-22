@@ -3,6 +3,7 @@ import numpy as np
 
 cimport numpy as np
 cimport bingham_c
+from cpython.mem cimport PyMem_Malloc, PyMem_Free
 
 
 cdef class Bingham:
@@ -34,6 +35,22 @@ cdef class Bingham:
     def pdf(self, np.ndarray[double, ndim=1, mode="c"] x not None):
         cdef double f = bingham_c.bingham_pdf(<double*> x.data, &self._c_bingham_t)
         return f
+
+    @cython.boundscheck(False)
+    @cython.wraparound(False)    
+    def fit(self, np.ndarray[np.float64_t, ndim=2, mode="c"] X):
+        cdef int n = X.shape[0]
+        cdef int d = X.shape[1]
+        cdef double** c_X = <double**>PyMem_Malloc(n * sizeof(double*))
+        if not c_X:
+            raise MemoryError()
+        try:
+            for i in range(n):
+                c_X[i] = &X[i,0]
+            bingham_c.bingham_fit(&self._c_bingham_t, &c_X[0], n, d)
+        finally:
+            PyMem_Free(c_X)
+        print("SUCCESFUL FIT")
 
     
 def bingham_F(np.ndarray[double, ndim=1, mode="c"] Z not None):
