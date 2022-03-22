@@ -50,6 +50,15 @@ cdef class Bingham:
             bingham_c.bingham_fit(&self._c_bingham_t, &c_X[0], n, d)
         finally:
             PyMem_Free(c_X)
+        self.compute_stats()
+
+    def compute_stats(self):
+        bingham_c.bingham_stats(&self._c_bingham_t)
+
+    @property
+    def entropy(self):
+        cdef double entropy = self._c_bingham_t.stats.entropy
+        return entropy
         
         
 def bingham_F(np.ndarray[double, ndim=1, mode="c"] Z not None):
@@ -76,8 +85,3 @@ def bingham_kl_divergence(Bingham B1, Bingham B2):
     cdef bingham_c.bingham_t *c_B2 = &B2._c_bingham_t
     cdef double kl = bingham_c.bingham_KL_divergence(c_B1, c_B2)
     return kl
-
-
-def bingham_entropy(Bingham B):
-    cdef double entropy = B._c_bingham_t.stats.entropy
-    return entropy
