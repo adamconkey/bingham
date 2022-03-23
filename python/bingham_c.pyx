@@ -84,10 +84,6 @@ cdef class Bingham:
         return mode
 
     def draw(self, n_samples_axis=100, n_orientation_samples=200, vm_bandwidth=50.):
-        """
-        Visualization based on:
-        https://github.com/igilitschenski/deep_bingham/blob/master/utils/visualization.py
-        """
         qs = self.sample(n_orientation_samples)
         Rs = [Quaternion(q).rotation_matrix for q in qs]
         
@@ -101,6 +97,7 @@ cdef class Bingham:
         ax.set_ylim(-1, 1)
         ax.set_zlim(-1, 1)
         ax.set_box_aspect((1., 1., 1.))
+        ax.set_axis_off()
         
         for R in Rs:            
             x = R[:,0]
@@ -109,7 +106,8 @@ cdef class Bingham:
             ax.scatter(x[0], x[1], x[2], color='red', alpha=0.5)
             ax.scatter(y[0], y[1], y[2], color='green', alpha=0.5)
             ax.scatter(z[0], z[1], z[2], color='blue', alpha=0.5)
-            
+
+        # Draw sphere
         N=40
         stride=1
         u = np.linspace(0, 2 * np.pi, N)
@@ -121,28 +119,7 @@ cdef class Bingham:
                         alpha=0.1, color='slategrey')
         ax.plot_wireframe(x, y, z, cstride=stride, rstride=stride,
                           color='slategrey', lw=0.2)
-
-            
-        # Turn off the axis planes
-        # ax.view_init()
-        #ax.azim = 0
-        #ax.elev = 0
-        ax.set_axis_off()
         plt.show()
-
-    def _vmf_kernel(self, points, means, bandwidth):
-        # Evaluates a von Mises-Fisher mixture type kernel on given inputs.
-        num_points = points.shape[0]
-        result = np.zeros(num_points)
-        for cur_mean in means:
-            # Use of np.einsum for optimizing dot product computation
-            # performance. Based on approach presented in:
-            # https://stackoverflow.com/a/15622926/812127
-            result += np.exp(bandwidth * np.einsum(
-                'ij,ij->i',
-                np.repeat(np.expand_dims(cur_mean, 0), num_points, axis=0),
-                points))
-        return result
 
     def _plot_coordinate_axes(self, coordinates):
         zeros = np.zeros(3)        
