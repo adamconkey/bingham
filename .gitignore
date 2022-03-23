@@ -12,4 +12,4 @@ c/local/*
 python/*.c
 python/*.so
 python/build/*
-
+python/.ipynb_checkpoints/*

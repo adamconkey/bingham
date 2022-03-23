@@ -33,7 +33,7 @@ print("ENTROPY", b2.entropy)
 print("MODE", b2.mode)
 print("3 SAMPLES:", b2.sample(3))
 
-print("Drawing...")
-b2.draw()
+# print("Drawing...")
+# b2.draw()
 
 print("DONE")
