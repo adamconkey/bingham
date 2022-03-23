@@ -27,11 +27,15 @@ b2.fit(X2)
 
 print("B1 PDF", b1.pdf(np.array([1,0,0,0], dtype=np.double)))
 print("B2 PDF", b2.pdf(np.array([1,0,0,0], dtype=np.double)))
+print("B1 ENTROPY", b1.entropy)
+print("B1 MODE", b1.mode)
+print("B1 V", b1.V)
+print("B1 Z", b1.Z)
+print("B1 3 SAMPLES:", b1.sample(3))
+
+
 print("CE", pybingham.bingham_cross_entropy(b1, b2))
 print("KL", pybingham.bingham_kl_divergence(b1, b2))
-print("ENTROPY", b2.entropy)
-print("MODE", b2.mode)
-print("3 SAMPLES:", b2.sample(3))
 
 # print("Drawing...")
 # b2.draw()

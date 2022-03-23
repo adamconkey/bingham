@@ -83,6 +83,21 @@ cdef class Bingham:
             mode[i] = self._c_bingham_t.stats.mode[i]
         return mode
 
+    @property
+    def V(self):
+        cdef np.ndarray[double, ndim=2, mode="c"] V = np.empty((3, 4))
+        for i in range(3):
+            for j in range(4):
+                V[i,j] = self._c_bingham_t.V[i][j]
+        return V
+
+    @property
+    def Z(self):
+        cdef np.ndarray[double, ndim=1, mode='c'] Z = np.empty(3)
+        for i in range(3):
+            Z[i] = self._c_bingham_t.Z[i]
+        return Z
+        
     def draw(self, n_samples_axis=100, n_orientation_samples=200, vm_bandwidth=50.):
         qs = self.sample(n_orientation_samples)
         Rs = [Quaternion(q).rotation_matrix for q in qs]
