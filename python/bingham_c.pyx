@@ -1,5 +1,10 @@
 import cython
 import numpy as np
+import matplotlib.pylab as plab
+import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap
+from mpl_toolkits.mplot3d import Axes3D
+from pyquaternion import Quaternion
 
 import ctypes
 cimport numpy as np
@@ -78,6 +83,76 @@ cdef class Bingham:
             mode[i] = self._c_bingham_t.stats.mode[i]
         return mode
 
+    def draw(self, n_samples_axis=100, n_orientation_samples=200, vm_bandwidth=50.):
+        """
+        Visualization based on:
+        https://github.com/igilitschenski/deep_bingham/blob/master/utils/visualization.py
+        """
+        qs = self.sample(n_orientation_samples)
+        Rs = [Quaternion(q).rotation_matrix for q in qs]
+        
+        fig = plt.figure()
+        fig.set_size_inches(10, 10)
+        base_coordinates = Quaternion(self.mode).rotation_matrix.T
+        
+        ax = fig.add_subplot(1, 1, 1, projection='3d')
+        self._plot_coordinate_axes(base_coordinates)
+        ax.set_xlim(-1, 1)
+        ax.set_ylim(-1, 1)
+        ax.set_zlim(-1, 1)
+        ax.set_box_aspect((1., 1., 1.))
+        
+        for R in Rs:            
+            x = R[:,0]
+            y = R[:,1]
+            z = R[:,2]
+            ax.scatter(x[0], x[1], x[2], color='red', alpha=0.5)
+            ax.scatter(y[0], y[1], y[2], color='green', alpha=0.5)
+            ax.scatter(z[0], z[1], z[2], color='blue', alpha=0.5)
+            
+        N=40
+        stride=1
+        u = np.linspace(0, 2 * np.pi, N)
+        v = np.linspace(0, np.pi, N)
+        x = np.outer(np.cos(u), np.sin(v))
+        y = np.outer(np.sin(u), np.sin(v))
+        z = np.outer(np.ones(np.size(u)), np.cos(v))
+        ax.plot_surface(x, y, z, cstride=stride, rstride=stride,
+                        alpha=0.1, color='slategrey')
+        ax.plot_wireframe(x, y, z, cstride=stride, rstride=stride,
+                          color='slategrey', lw=0.2)
+
+            
+        # Turn off the axis planes
+        # ax.view_init()
+        #ax.azim = 0
+        #ax.elev = 0
+        ax.set_axis_off()
+        plt.show()
+
+    def _vmf_kernel(self, points, means, bandwidth):
+        # Evaluates a von Mises-Fisher mixture type kernel on given inputs.
+        num_points = points.shape[0]
+        result = np.zeros(num_points)
+        for cur_mean in means:
+            # Use of np.einsum for optimizing dot product computation
+            # performance. Based on approach presented in:
+            # https://stackoverflow.com/a/15622926/812127
+            result += np.exp(bandwidth * np.einsum(
+                'ij,ij->i',
+                np.repeat(np.expand_dims(cur_mean, 0), num_points, axis=0),
+                points))
+        return result
+
+    def _plot_coordinate_axes(self, coordinates):
+        zeros = np.zeros(3)        
+        x, y, z = zip(zeros, coordinates[0])
+        plt.plot(x, y, z, linewidth=3, color='red')
+        x, y, z = zip(zeros, coordinates[1])
+        plt.plot(x, y, z, linewidth=3, color='green')
+        x, y, z = zip(zeros, coordinates[2])
+        plt.plot(x, y, z, linewidth=3, color='blue')
+    
 
 def bingham_cross_entropy(Bingham B1, Bingham B2):
     cdef bingham_c.bingham_t *c_B1 = &B1._c_bingham_t
