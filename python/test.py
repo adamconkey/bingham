@@ -39,6 +39,11 @@ print("B1 3 SAMPLES:", b1.sample(3))
 print("CE", pybingham.bingham_cross_entropy(b1, b2))
 print("KL", pybingham.bingham_kl_divergence(b1, b2))
 
+q = np.array([0.,0.,1.,0.])
+print("BEFORE ROTATE", f"\n  MODE {b1.mode}", f"\n  V {b1.V}")
+b1_rot = pybingham.bingham_pre_rotate_3d(b1, q)
+print("AFTER ROTATE", f"\n  MODE {b1_rot.mode}", f"\n  V {b1_rot.V}")
+
 # print("Drawing...")
 # b2.draw()
 

@@ -167,3 +167,12 @@ def bingham_dF(Z):
     cdef double dF2 = bingham_c.bingham_dF2_3d(<double> Z[0], <double> Z[1], <double> Z[2])
     cdef double dF3 = bingham_c.bingham_dF3_3d(<double> Z[0], <double> Z[1], <double> Z[2])
     return np.asarray([dF1, dF2, dF3])
+
+
+def bingham_pre_rotate_3d(Bingham B, np.ndarray[double, ndim=1, mode="c"] q not None):
+    B_rot = Bingham()
+    cdef bingham_c.bingham_t *c_B = &B._c_bingham_t
+    cdef bingham_c.bingham_t *c_B_rot = &B_rot._c_bingham_t
+    bingham_c.bingham_pre_rotate_3d(c_B_rot, c_B, <double*> q.data)
+    B_rot.compute_stats()
+    return B_rot
