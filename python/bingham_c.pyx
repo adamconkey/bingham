@@ -41,6 +41,9 @@ cdef class Bingham:
     def pdf(self, np.ndarray[double, ndim=1, mode="c"] x not None):
         return bingham_c.bingham_pdf(<double*> x.data, &self._c_bingham_t)
 
+    def log_pdf(self, np.ndarray[double, ndim=1, mode="c"] x not None):
+        return np.log(self.pdf(x))
+    
     @cython.boundscheck(False)
     @cython.wraparound(False)    
     def fit(self, np.ndarray[np.float64_t, ndim=2, mode="c"] X):
