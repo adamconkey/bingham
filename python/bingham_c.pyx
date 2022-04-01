@@ -101,7 +101,8 @@ cdef class Bingham:
             Z[i] = self._c_bingham_t.Z[i]
         return Z
         
-    def draw(self, n_samples_axis=100, n_orientation_samples=200, vm_bandwidth=50.):
+    def draw(self, n_samples_axis=100, n_orientation_samples=200, vm_bandwidth=50.,
+             surface_alpha=0.1):
         qs = self.sample(n_orientation_samples)
         Rs = [Quaternion(q).rotation_matrix for q in qs]
         
@@ -134,7 +135,7 @@ cdef class Bingham:
         y = np.outer(np.sin(u), np.sin(v))
         z = np.outer(np.ones(np.size(u)), np.cos(v))
         ax.plot_surface(x, y, z, cstride=stride, rstride=stride,
-                        alpha=0.1, color='slategrey')
+                        alpha=surface_alpha, color='slategrey')
         ax.plot_wireframe(x, y, z, cstride=stride, rstride=stride,
                           color='slategrey', lw=0.2)
         plt.show()
